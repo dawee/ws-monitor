@@ -1,0 +1,44 @@
+#!/usr/bin/env node
+
+const argv = require('minimist')(process.argv);
+const net = require('net');
+const through = require('through2');
+
+function printChunk(blockName, chunk) {
+  console.log(`[begin:${blockName}]`);
+  for (byte of chunk.values()) {
+    const str = (new Buffer([byte])).toString();
+
+    if (str.match(/[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/\? ]{1}/)) {
+      process.stdout.write(str);
+    } else {
+      process.stdout.write(`\\${Number(byte)}`);
+    }
+  }
+  console.log('\n[end]')
+}
+
+function printString(blockName) {
+  return through(function (chunk, enc, callback) {
+    printChunk(blockName, chunk);
+    this.push(chunk);
+    callback();
+  })
+}
+
+
+net.createServer((socket) => {
+  const proxy = new net.Socket();
+
+  proxy.connect({host: argv.hostname || '127.0.0.1', port: argv.hostport});
+
+  socket
+    .pipe(printString('client'))
+    .pipe(proxy);
+
+  proxy
+    .pipe(printString('server'))
+    .pipe(socket);
+
+
+}).listen(argv.p);
