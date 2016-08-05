@@ -11,7 +11,7 @@ RSV2    : 0
 RSV3    : 0
 OPCODE  : 0001 (text)
 MASK    : 0
-LEN     : 1010110 (86)
+LEN     : 1010110 (86 bytes)
 
 PAYLOAD :
     IO.CODE : 00110000 "0" (Contract)
@@ -28,8 +28,8 @@ RSV2    : 0
 RSV3    : 0
 OPCODE  : 0001 (text)
 MASK    : 0
-LEN     : 0000010 2
+LEN     : 0000010 (2 bytes)
 PAYLOAD :
     IO.CODE : 00110100 "4" (Ping)
     TEXT : 00110000 "0"
-*/
+```
