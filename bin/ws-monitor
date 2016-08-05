@@ -4,18 +4,30 @@ const argv = require('minimist')(process.argv);
 const net = require('net');
 const through = require('through2');
 
-function printChunk(blockName, chunk) {
-  console.log(`[begin:${blockName}]`);
-  for (byte of chunk.values()) {
-    const str = (new Buffer([byte])).toString();
+let serverBuffer = Buffer([]);
+let handshakeReceived = false;
 
-    if (str.match(/[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/\? ]{1}/)) {
-      process.stdout.write(str);
+const dec2bin = (dec) => (dec >>> 0).toString(2);
+
+
+function printChunk(blockName, chunk) {
+  for (byte of chunk.values()) {
+    if (!handshakeReceived) {
+      serverBuffer = Buffer.concat([serverBuffer, new Buffer([byte])]);
+
+      if (serverBuffer.toString().match(/.\r\n\r\n$/)) handshakeReceived = true;
     } else {
-      process.stdout.write(`\\${Number(byte)}`);
+      process.stdout.write(new Buffer([byte]).toString('hex'));
     }
+
+    //const str = (new Buffer([byte])).toString('hex');
+
+    //if (str.match(/[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/\? ]{1}/)) {
+    // process.stdout.write(dec2bin(byte));
+    //} else {
+    //  process.stdout.write(`\\${Number(byte)}`);
+    //}
   }
-  console.log('\n[end]')
 }
 
 function printString(blockName) {
@@ -33,7 +45,7 @@ net.createServer((socket) => {
   proxy.connect({host: argv.hostname || '127.0.0.1', port: argv.hostport});
 
   socket
-    .pipe(printString('client'))
+    //.pipe(printString('client'))
     .pipe(proxy);
 
   proxy
