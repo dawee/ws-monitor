@@ -33,3 +33,20 @@ PAYLOAD :
     IO.CODE : 00110100 "4" (Ping)
     TEXT : 00110000 "0"
 ```
+
+## From Client
+
+
+### Pong
+
+```
+FIN     : 1
+RSV1    : 0
+RSV2    : 0
+RSV3    : 0
+OPCODE  : 0001 (text)
+MASK    : 1
+LEN     : 0000001 (1 byte)
+MASKING KEY : 01101000010001100001001110010011
+PAYLOAD : 01011010
+```

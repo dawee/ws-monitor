@@ -45,11 +45,11 @@ net.createServer((socket) => {
   proxy.connect({host: argv.hostname || '127.0.0.1', port: argv.hostport});
 
   socket
-    //.pipe(printString('client'))
+    .pipe(printString('client'))
     .pipe(proxy);
 
   proxy
-    .pipe(printString('server'))
+    //.pipe(printString('server'))
     .pipe(socket);
 
 
